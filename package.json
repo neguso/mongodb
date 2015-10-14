@@ -1,0 +1,17 @@
+{
+  "name": "mongodb",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "asyncawait": "^1.0.1",
+    "mongoose": "^4.1.10",
+    "q": "^1.4.1"
+  }
+}
