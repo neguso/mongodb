@@ -28,4 +28,4 @@ xxxSchema.statics.s1 = function()
 	// this - the model object
 };
 
-exports.eee = mongoose.model('xxx', xxxSchema);
+exports.eee = mongoose.model('eee', xxxSchema);

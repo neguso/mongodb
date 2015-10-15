@@ -12,23 +12,6 @@ var projectSchema = Schema({
 projectSchema.plugin(plugins.createdon);
 projectSchema.plugin(plugins.updatedon);
 
-projectSchema.virtual('uname').get(function()
-{
-  return this.name.toUpperCase();
-});
-
 projectSchema.index({ name: 1 }, { name: 'ix_name' });
-
-projectSchema.methods.upper = function()
-{
-  // this - the document object
-  return this.name.toUpperCase();
-};
-
-projectSchema.statics.findByName = function(name, cb)
-{
-  // this - the model object
-  return this.find({ name: new RegExp(name, 'i') }, cb);
-};
 
 exports.Project = mongoose.model('Project', projectSchema);
