@@ -24,19 +24,17 @@ var seed_projects = async(function()
 
   try
   {
-
     var count = await(project.count({}));
     if(count === 0)
     {
-      for(var batch = 0; batch < 10; batch++)
+      for(var batch = 0; batch < 100; batch++)
       {
         var ary = [];
-        for(var i = 0; i < 5000; i++)
+        for(var i = 0; i < 1000; i++)
           ary.push({ name: 'project name ' + i.toString(), description: 'project ' + i.toString() + ' description goes here' });
         await(project.create(ary));
       }
     }
-
   }
   catch(err)
   {
