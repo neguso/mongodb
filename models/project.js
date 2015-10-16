@@ -3,10 +3,15 @@ var plugins = require('./plugins.js');
 
 var Schema = mongoose.Schema;
 
+var containerSchema = new Schema({
+	name: Schema.Types.String,
+	description: Schema.Types.String
+});
+
 var projectSchema = Schema({
   name: Schema.Types.String,
   description: Schema.Types.String,
-  tasks: [{ type: Schema.Types.ObjectId, ref: 'Task' }]
+	containers: [containerSchema]
 });
 
 projectSchema.plugin(plugins.createdon);
