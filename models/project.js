@@ -8,10 +8,16 @@ var containerSchema = new Schema({
 	description: Schema.Types.String
 });
 
+var tagSchema = new Schema({
+	name: Schema.Types.String,
+	color: Schema.Types.String
+});
+
 var projectSchema = Schema({
-  name: Schema.Types.String,
-  description: Schema.Types.String,
-	containers: [containerSchema]
+	name: Schema.Types.String,
+	description: Schema.Types.String,
+	containers: [containerSchema],
+	tags: [tagSchema]
 });
 
 projectSchema.plugin(plugins.createdon);

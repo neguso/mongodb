@@ -6,6 +6,8 @@ var Schema = mongoose.Schema;
 var taskSchema = Schema({
   name: Schema.Types.String,
   description: Schema.Types.String,
+	start: Schema.Types.Date,
+	due: Schema.Types.Date,
   project: { type: Schema.Types.ObjectId, ref: 'Project' }
 });
 

@@ -5,6 +5,51 @@ var mongoose = require('mongoose');
 var models = require('../models');
 
 
+exports.test = function()
+{
+	models.Project.find().remove({}, function(err, data) {
+		if(err) return;
+
+		console.log('Removed.');
+
+		createProject();
+	});
+};
+
+function createProject()
+{
+	var document = {
+		name: 'Magic Project',
+		description: 'this is a magic project',
+		containers: [
+			{ name: 'Backlog', description: 'Backlog container' },
+			{ name: 'Sprint One', description: 'Sprint one container' }
+		],
+		tags: [
+			{ name: 'red', color: 'red' },
+			{ name: 'blue', color: 'blue' }
+		]
+	};
+	models.Project.create(document)
+		.then(function(project) {
+			console.log('Saved - ' + project.id);
+
+			createTasks();
+		}, function(err) {
+			console.log('Error - ' + err);
+		});
+}
+
+function createTasks()
+{
+	var documents = [
+		{  }
+	];
+
+}
+
+
+
 exports.all = function()
 {
   console.log('seeding projects...');
