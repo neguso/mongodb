@@ -10,14 +10,15 @@ exports.test = function()
 	models.Project.find().remove({}, function(err, data) {
 		if(err) return;
 
-		console.log('Removed.');
+		console.log('All Projects removed.');
 
-		createProject();
+		testProject();
 	});
 };
 
-function createProject()
+function testProject()
 {
+	// create a project with containers and tags
 	var document = {
 		name: 'Magic Project',
 		description: 'this is a magic project',
@@ -32,20 +33,82 @@ function createProject()
 	};
 	models.Project.create(document)
 		.then(function(project) {
-			console.log('Saved - ' + project.id);
+			console.log('Project created - ' + project.id);
 
-			createTasks();
+			// next
+			testContainers1();
 		}, function(err) {
-			console.log('Error - ' + err);
+			console.log('Error creating project - ' + err);
 		});
 }
 
-function createTasks()
+function testContainers1()
 {
-	var documents = [
-		{  }
-	];
+	// create a new container
+	var project = models.Project.find({}, null, { take: 1 }).exec()
+		.then(function(result){
+			project = result[0];
 
+			project.containers.addToSet({ name: 'new container', description: 'container added later' });
+			project.save().then(function() {
+				console.log('Project container added - ' + project.id);
+
+				// next
+				testContainers2();
+			}, function(err) {
+				console.log('Error saving project - ' + err);
+			});
+
+		}, function(err){
+			console.log('Error finding projects - ' + err);
+		});
+}
+
+function testContainers2()
+{
+	// update an existing container
+	var project = models.Project.find({}, null, { take: 1 }).exec()
+		.then(function(result){
+			project = result[0];
+
+			var container = project.containers[0];
+			container.name = 'updated container';
+			container.description = 'updated description for container';
+
+			project.save().then(function() {
+				console.log('Project container updated - ' + project.id);
+
+				// next
+				testContainers3();
+			}, function(err) {
+				console.log('Error saving project - ' + err);
+			});
+
+		}, function(err){
+			console.log('Error finding projects - ' + err);
+		});
+}
+
+
+function testContainers3()
+{
+	// remove an existing container
+	var project = models.Project.find({}, null, { take: 1 }).exec()
+		.then(function(result){
+			project = result[0];
+
+			project.containers[1].remove();
+
+			project.save().then(function() {
+				console.log('Project container updated - ' + project.id);
+
+			}, function(err) {
+				console.log('Error saving project - ' + err);
+			});
+
+		}, function(err){
+			console.log('Error finding projects - ' + err);
+		});
 }
 
 
