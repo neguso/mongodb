@@ -5,10 +5,10 @@ exports.Projects = {
 
 	/**
 	 * Read user projects.
-	 * @param user - User ID.
-	 * @param {ReadCallback} callback - Node style callback. Returns an array of projects.
+	 * @param userId - User ID.
+	 * @returns {Promise} A promise that returns an array of projects.
 	 */
-  read: function(user)
+  read: function(userId)
   {
 		var defer = q.defer();
 
@@ -20,7 +20,17 @@ exports.Projects = {
     });
 
 		return q.promise;
-  }
+  },
+
+	/**
+	 * Get a project.
+	 * @param projectId - Project ID.
+	 */
+	get: function(projectId)
+	{
+
+
+	}
 
 
 };
