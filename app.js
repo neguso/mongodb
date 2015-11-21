@@ -16,6 +16,8 @@ mongoose.connection.once('open', function()
 	console.log('MongoDB connection opened.');
 
 	seed.test();
+
+	services.Projects.read(null);
 });
 
 mongoose.connection.once('close', function()
