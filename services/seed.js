@@ -1,23 +1,33 @@
-﻿var Q = require('q');
-var async = require('asyncawait/async');
-var await = require('asyncawait/await');
+﻿var q = require('q');
 var mongoose = require('mongoose');
 var models = require('../models');
+var co = require('co');
 
 
 exports.test = function()
 {
+	var defer = q.defer();
+
 	models.Project.find().remove({}, function(err, data) {
-		if(err) return;
+		if(err) return defer.reject(err);
 
 		console.log('All Projects removed.');
 
-		testProject();
+		testProject()
+			.then(function(result) {
+				defer.resolve(result);
+			}, function(err) {
+				defer.reject(err);
+			});
 	});
+
+	return defer.promise;
 };
 
 function testProject()
 {
+	var defer = q.defer();
+
 	// create a project with containers and tags
 	var document = {
 		name: 'Magic Project',
@@ -36,14 +46,24 @@ function testProject()
 			console.log('Project created - ' + project.id);
 
 			// next
-			testContainers1();
+			testContainers1()
+				.then(function(result) {
+					defer.resolve(result);
+				}, function(err) {
+					defer.reject(err);
+				});
 		}, function(err) {
 			console.log('Error creating project - ' + err);
+			defer.reject(err);
 		});
+
+	return defer.promise;
 }
 
 function testContainers1()
 {
+	var defer = q.defer();
+
 	// create a new container
 	var project = models.Project.find({}, null, { take: 1 }).exec()
 		.then(function(result){
@@ -54,18 +74,29 @@ function testContainers1()
 				console.log('Project container added - ' + project.id);
 
 				// next
-				testContainers2();
+				testContainers2()
+					.then(function(result) {
+						defer.resolve(result);
+					}, function(err) {
+						defer.reject(err);
+					});
 			}, function(err) {
 				console.log('Error saving project - ' + err);
+				defer.reject(err);
 			});
 
 		}, function(err){
 			console.log('Error finding projects - ' + err);
+			defer.reject(err);
 		});
+
+	return defer.promise;
 }
 
 function testContainers2()
 {
+	var defer = q.defer();
+
 	// update an existing container
 	var project = models.Project.find({}, null, { take: 1 }).exec()
 		.then(function(result){
@@ -79,19 +110,29 @@ function testContainers2()
 				console.log('Project container updated - ' + project.id);
 
 				// next
-				testContainers3();
+				testContainers3()
+					.then(function(result) {
+						defer.resolve(result);
+					}, function(err) {
+						defer.reject(err);
+					});
 			}, function(err) {
 				console.log('Error saving project - ' + err);
+				defer.reject(err);
 			});
 
 		}, function(err){
 			console.log('Error finding projects - ' + err);
+			defer.reject(err);
 		});
-}
 
+	return defer.promise;
+}
 
 function testContainers3()
 {
+	var defer = q.defer();
+
 	// remove an existing container
 	var project = models.Project.find({}, null, { take: 1 }).exec()
 		.then(function(result){
@@ -100,39 +141,79 @@ function testContainers3()
 			project.containers[1].remove();
 
 			project.save().then(function() {
-				console.log('Project container updated - ' + project.id);
-
+				console.log('Project container removed - ' + project.id);
+				defer.resolve();
 			}, function(err) {
 				console.log('Error saving project - ' + err);
+				defer.reject(err);
 			});
 
 		}, function(err){
 			console.log('Error finding projects - ' + err);
+			defer.reject(err);
 		});
+
+	return defer.promise;
 }
 
 
 
-exports.all = function()
-{
-  console.log('seeding projects...');
-  seed_projects()
-    .then(function(result) { console.log('done'); })
-    .catch(function(reason) { console.log('error:' + reason); });
+exports.all = co.wrap(function*() {
 
+	try {
+		console.log('seeding users...');
+		yield seed_users();
 
+		console.log('seeding projects...');
+		yield seed_projects();
 
+		//...
+
+		console.log('done');
+		return true;
+	}
+	catch (err) {
+		console.log('error: ' + err);
+		return err;
+	}
+
+});
+
+exports.all2 = function() {
+	return co(function*(){
+
+		try {
+			console.log('seeding users...');
+			yield seed_users();
+
+			console.log('seeding projects...');
+			yield seed_projects();
+
+			//...
+
+			console.log('done');
+			return true;
+		}
+		catch (err) {
+			console.log('error: ' + err);
+			return err;
+		}
+
+	});
 };
 
 
-var seed_projects = async(function()
-{
-  var project = {
-    count: Q.nbind(models.Project.count, models.Project),
-    create: Q.nbind(models.Project.create, models.Project)
-  };
+var seed_users = co.wrap(function*() {
+	var count = yield models.User.count();
+	if(count === 0)
+	{
+		var user = yield models.User.create({ email: 'test@domain.com', firstName: 'Jon', lastName: 'Doe' });
+	}
+});
 
-	var count = await(project.count({}));
+var seed_projects = co.wrap(function*() {
+
+	var count = yield models.Project.count({});
 	if(count === 0)
 	{
 		for(var batch = 0; batch < 10; batch++)
@@ -147,19 +228,7 @@ var seed_projects = async(function()
 					containers: [{ name: 'todo' }, { name: 'done' }]
 				});
 			}
-			await(project.create(ary));
+			yield models.Project.create(ary);
 		}
-  }
+	}
 });
-
-var query_projects = async(function(){
-	var project = {
-		find: Q.nbind(models.Project.find, models.Project),
-		create: Q.nbind(models.Project.create, models.Project)
-	};
-
-	// project users
-	var result = await(projects.find({ name: 'project name 12345' }));
-
-});
-

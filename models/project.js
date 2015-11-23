@@ -26,3 +26,27 @@ projectSchema.plugin(plugins.updatedon);
 projectSchema.index({ name: 1 }, { name: 'ix_name' });
 
 exports.Project = mongoose.model('Project', projectSchema);
+
+/**
+ * Project model object.
+ * @typedef {object} ProjectModel
+ * @prop {ObjectID} _id
+ * @prop {string} name
+ * @prop {string} description
+ * @prop { Array.<ContainerModel> } containers
+ * @prop { Array.<TagModel> } tags
+ */
+
+/**
+ * Container model object.
+ * @typedef {object} ContainerModel
+ * @prop {string} name
+ * @prop {string} description
+ */
+
+/**
+ * Container model object.
+ * @typedef {object} TagModel
+ * @prop {string} name
+ * @prop {string} color
+ */

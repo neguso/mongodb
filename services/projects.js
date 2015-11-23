@@ -5,30 +5,45 @@ exports.Projects = {
 
 	/**
 	 * Read user projects.
-	 * @param userId - User ID.
-	 * @returns {Promise} A promise that returns an array of projects.
+	 * @param {ObjectID} userId
+	 * @returns {Promise} A promise that returns an array of {@link ProjectInfo} objects.
 	 */
   read: function(userId)
   {
 		var defer = q.defer();
 
-    models.Project.find({}, 'name description', {}, function(err, documents)
-    {
+   /* models.Project.find({}, 'name description', { lean: true }, function(err, documents)
+	 {
+	 if(err) return defer.reject(err);
+	 defer.resolve(documents);
+	 });*/
+
+		models.ProjectUserLink.find({ user: userId }, null, { lean: true }, function(err, documents)
+		{
 			if(err) return defer.reject(err);
-
 			defer.resolve(documents);
-    });
+		});
 
-		return q.promise;
+
+		return defer.promise;
   },
 
 	/**
 	 * Get a project.
-	 * @param projectId - Project ID.
+	 * @param {ObjectID} projectId
+	 * @returns {Promise} A promise that returns a {@link ProjectModel} object.
 	 */
 	get: function(projectId)
 	{
+		var defer = q.defer();
 
+		models.Project.findById(projectId, function(err, document)
+		{
+			if(err) return defer.reject(err);
+			defer.resolve(document);
+		});
+
+		return defer.promise;
 
 	}
 
@@ -42,16 +57,12 @@ exports.Projects = {
 
 
 
-/**
- * Node style callback.
- * @callback ReadCallback
- * @param err - Null if operation succeeded, an Error object otherwise.
- * @param {ProjectInfo[]} projects - Array of projects.
- */
+
 
 /**
- * Project object.
+ * Project information object.
  * @typedef {object} ProjectInfo
- * @property {string} name - Name of the project.
- * @property {string} description - Description of the project.
+ * @prop {ObjectID} _id
+ * @prop {string} name
+ * @prop {string} description
   */

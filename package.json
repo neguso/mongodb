@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "asyncawait": "^1.0.1",
+    "co": "^4.6.0",
     "mongoose": "^4.1.10",
     "q": "^1.4.1"
   }
