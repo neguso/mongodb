@@ -2,7 +2,7 @@ var Q = require('q');
 var mongoose = require('mongoose');
 var models = require('./models');
 var services = require('./services/projects');
-var seed = require('./services/seed');
+var seed = require('./services/test');
 
 
 var async = require('asyncawait/async');
@@ -216,7 +216,7 @@ mongoose.connection.once('open', function(callback)
     });
 });
 
-mongoose.connect('mongodb://192.168.99.100/test');
+mongoose.connect('mongodb://192.168.99.100/project');
 
 
 function handleError(err)

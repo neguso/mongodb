@@ -1,5 +1,5 @@
-﻿var q = require('q');
-var models = require('../models');
+﻿var models = require('../models');
+
 
 exports.Projects = {
 
@@ -10,22 +10,23 @@ exports.Projects = {
 	 */
   read: function(userId)
   {
-		var defer = q.defer();
+		return new Promise(function(resolve, reject) {
 
-   /* models.Project.find({}, 'name description', { lean: true }, function(err, documents)
-	 {
-	 if(err) return defer.reject(err);
-	 defer.resolve(documents);
-	 });*/
+			models.Project.find({}, 'name description', { lean: true }, function(err, documents)
+			{
+				if(err) return reject(err);
+
+				resolve(documents);
+			});
+
+		});
+
 
 		models.ProjectUserLink.find({ user: userId }, null, { lean: true }, function(err, documents)
 		{
 			if(err) return defer.reject(err);
 			defer.resolve(documents);
 		});
-
-
-		return defer.promise;
   },
 
 	/**
@@ -35,16 +36,16 @@ exports.Projects = {
 	 */
 	get: function(projectId)
 	{
-		var defer = q.defer();
+		return new Promise(function(resolve, reject) {
 
-		models.Project.findById(projectId, function(err, document)
-		{
-			if(err) return defer.reject(err);
-			defer.resolve(document);
+			models.Project.findById(projectId, function(err, document)
+			{
+				if(err) return reject(err);
+
+				resolve(document);
+			});
+
 		});
-
-		return defer.promise;
-
 	}
 
 

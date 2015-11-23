@@ -1,30 +1,75 @@
 ﻿var q = require('q');
-var mongoose = require('mongoose');
-var models = require('../models');
 var co = require('co');
 
+var mongoose = require('mongoose');
+var models = require('../models');
 
-exports.test = function()
+
+exports.w_promises = function()
 {
-	var defer = q.defer();
+	models.Project.count({})
+		.then(function(count){
 
-	models.Project.find().remove({}, function(err, data) {
-		if(err) return defer.reject(err);
+			if(count === 0)
+				return models.Project.create({ mame: 'the project' });
 
-		console.log('All Projects removed.');
+			return Promise.resolve(true);
+		})
+		.then(function(project){
 
-		testProject()
-			.then(function(result) {
-				defer.resolve(result);
-			}, function(err) {
-				defer.reject(err);
-			});
-	});
+			return models.Project.find({}, null, { take: 1 }).exec();
+		})
+		.then(function(projects){
 
-	return defer.promise;
+			projects[0].containers.addToSet({ name: 'new container' });
+			return projects[0].save();
+		})
+		.then(function(project){
+
+			var p = project;
+		});
 };
 
-function testProject()
+
+exports.w_co = function()
+{
+	return co(function*(){
+
+		var count = yield models.Project.count({});
+		if(count === 0)
+			yield models.Project.create({ mame: 'the project' });
+		var projects = yield models.Project.find({}, null, { take: 1 }).exec()
+		projects[0].containers.addToSet({ name: 'new container' })
+		var project = yield projects[0].save();
+
+	});
+
+};
+
+
+
+exports.project = function()
+{
+	return new Promise(function(resolve, reject){
+
+		// cleanup projects
+		models.Project.find().remove({}, function(err, data) {
+			if(err) return reject(err);
+
+			console.log('All Projects removed.');
+
+			testProjectCreate()
+				.then(function(result) {
+					resolve(result);
+				}, function(err) {
+					reject(err);
+				});
+		});
+
+	});
+};
+
+function testProjectCreate()
 {
 	var defer = q.defer();
 
@@ -46,7 +91,7 @@ function testProject()
 			console.log('Project created - ' + project.id);
 
 			// next
-			testContainers1()
+			testProjectContainersAdd()
 				.then(function(result) {
 					defer.resolve(result);
 				}, function(err) {
@@ -60,7 +105,7 @@ function testProject()
 	return defer.promise;
 }
 
-function testContainers1()
+function testProjectContainersAdd()
 {
 	var defer = q.defer();
 
@@ -74,7 +119,7 @@ function testContainers1()
 				console.log('Project container added - ' + project.id);
 
 				// next
-				testContainers2()
+				testProjectContainersUpdate()
 					.then(function(result) {
 						defer.resolve(result);
 					}, function(err) {
@@ -93,7 +138,7 @@ function testContainers1()
 	return defer.promise;
 }
 
-function testContainers2()
+function testProjectContainersUpdate()
 {
 	var defer = q.defer();
 
@@ -110,7 +155,7 @@ function testContainers2()
 				console.log('Project container updated - ' + project.id);
 
 				// next
-				testContainers3()
+				testProjectContainersRemove()
 					.then(function(result) {
 						defer.resolve(result);
 					}, function(err) {
@@ -129,7 +174,7 @@ function testContainers2()
 	return defer.promise;
 }
 
-function testContainers3()
+function testProjectContainersRemove()
 {
 	var defer = q.defer();
 
@@ -155,80 +200,3 @@ function testContainers3()
 
 	return defer.promise;
 }
-
-
-
-exports.all = co.wrap(function*() {
-
-	try {
-		console.log('seeding users...');
-		yield seed_users();
-
-		console.log('seeding projects...');
-		yield seed_projects();
-
-		//...
-
-		console.log('done');
-		return true;
-	}
-	catch (err) {
-		console.log('error: ' + err);
-		return err;
-	}
-
-});
-
-exports.all2 = function() {
-	return co(function*(){
-
-		try {
-			console.log('seeding users...');
-			yield seed_users();
-
-			console.log('seeding projects...');
-			yield seed_projects();
-
-			//...
-
-			console.log('done');
-			return true;
-		}
-		catch (err) {
-			console.log('error: ' + err);
-			return err;
-		}
-
-	});
-};
-
-
-var seed_users = co.wrap(function*() {
-	var count = yield models.User.count();
-	if(count === 0)
-	{
-		var user = yield models.User.create({ email: 'test@domain.com', firstName: 'Jon', lastName: 'Doe' });
-	}
-});
-
-var seed_projects = co.wrap(function*() {
-
-	var count = yield models.Project.count({});
-	if(count === 0)
-	{
-		for(var batch = 0; batch < 10; batch++)
-		{
-			var ary = [];
-			for(var i = 0; i < 1000; i++)
-			{
-				var n = (batch * 1000 + i).toString();
-				ary.push({
-					name: 'project name ' + n,
-					description: 'project ' + n + ' description goes here',
-					containers: [{ name: 'todo' }, { name: 'done' }]
-				});
-			}
-			yield models.Project.create(ary);
-		}
-	}
-});

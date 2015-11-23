@@ -4,7 +4,7 @@ var co = require('co');
 var config = require('./config');
 var models = require('./models');
 var services = require('./services/projects');
-var seed = require('./services/seed');
+var test = require('./services/test');
 
 
 mongoose.connection.on('error', function()
@@ -16,27 +16,17 @@ mongoose.connection.once('open', function()
 {
 	console.log('MongoDB connection opened.');
 
-	var p1 = seed.all();
-	var p2 = seed.all2();
+	
 
-	seed.all()
-		.then(function(result) {
+	co(function*(){
 
-			services.Projects.read(null)
-				.then(function(project) {
+		yield test.w_co();
+		yield test.w_promises();
+	});
 
-					;
-
-				});
-
-		})
-		.catch(function(err) {
-
-		});
 
 	return;
-
-	seed.test()
+	test.project()
 		.then(function() {
 			services.Projects.read(null)
 				.then(function(projects) {
