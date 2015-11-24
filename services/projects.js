@@ -12,20 +12,13 @@ exports.Projects = {
   {
 		return new Promise(function(resolve, reject) {
 
-			models.Project.find({}, 'name description', { lean: true }, function(err, documents)
+			models.ProjectUserLink.find({ user: userId }, 'project', { lean: true }).populate('project', 'name description').exec(function(err, documents)
 			{
 				if(err) return reject(err);
 
-				resolve(documents);
+				resolve(documents.map(function(p) { return { _id: p._id, name: p.name, description: p.description } }));
 			});
 
-		});
-
-
-		models.ProjectUserLink.find({ user: userId }, null, { lean: true }, function(err, documents)
-		{
-			if(err) return defer.reject(err);
-			defer.resolve(documents);
 		});
   },
 

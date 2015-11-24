@@ -4,8 +4,9 @@ var plugins = require('./plugins.js');
 var Schema = mongoose.Schema;
 
 var fileSchema = Schema({
-    name: Schema.Types.String,
-    size: Schema.Types.Number
+	name: Schema.Types.String,
+	size: Schema.Types.Number,
+	key: Schema.Types.String
 });
 
 fileSchema.plugin(plugins.createdon);

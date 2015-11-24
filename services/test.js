@@ -1,50 +1,63 @@
 ﻿var q = require('q');
 var co = require('co');
-
 var mongoose = require('mongoose');
+
 var models = require('../models');
+var service = require('../services/projects');
 
 
-exports.w_promises = function()
-{
-	models.Project.count({})
-		.then(function(count){
+exports.testProject = co.wrap(function*() {
 
-			if(count === 0)
-				return models.Project.create({ mame: 'the project' });
+	try {
 
-			return Promise.resolve(true);
-		})
-		.then(function(project){
+		// clear projects
+		yield models.User.find({}).remove().exec();
+		yield models.Project.find({}).remove().exec();
+		yield models.ProjectUserLink.find({}).remove().exec();
 
-			return models.Project.find({}, null, { take: 1 }).exec();
-		})
-		.then(function(projects){
-
-			projects[0].containers.addToSet({ name: 'new container' });
-			return projects[0].save();
-		})
-		.then(function(project){
-
-			var p = project;
+		// create a user
+		var user = yield models.User.create({
+			email: 'john@domain.com',
+			first: 'John',
+			last: 'Doe'
 		});
-};
+
+		// create a project with containers and tags
+		var project = yield models.Project.create({
+			name: 'Magic Project',
+			description: 'this is a magic project',
+			containers: [
+				{name: 'Backlog', description: 'Backlog container'},
+				{name: 'Sprint One', description: 'Sprint one container'}
+			],
+			tags: [
+				{name: 'red', color: 'red'},
+				{name: 'blue', color: 'blue'}
+			],
+			files: [
+				{ name: 'image.jpeg', size: 1234, key: 'qwerty' },
+				{ name: 'picture.png', size: 4321, key: 'ytrewq' }
+			]
+		});
+
+		// assign user to project
+		yield models.ProjectUserLink.create({
+			role: 'default',
+			user: user._id,
+			project: project._id
+		});
 
 
-exports.w_co = function()
-{
-	return co(function*(){
+		var l = yield service.Projects.read(user._id);
+		var p = yield service.Projects.get(project._id);
 
-		var count = yield models.Project.count({});
-		if(count === 0)
-			yield models.Project.create({ mame: 'the project' });
-		var projects = yield models.Project.find({}, null, { take: 1 }).exec()
-		projects[0].containers.addToSet({ name: 'new container' })
-		var project = yield projects[0].save();
-
-	});
-
-};
+		var a = 1;
+	}
+	catch(err)
+	{
+		console.log('error: ' + err);
+	}
+});
 
 
 

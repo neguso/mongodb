@@ -11,6 +11,7 @@ var taskSchema = Schema({
   project: { type: Schema.Types.ObjectId, ref: 'Project' }
 });
 
+taskSchema.plugin(plugins.files);
 taskSchema.plugin(plugins.createdon);
 taskSchema.plugin(plugins.updatedon);
 

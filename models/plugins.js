@@ -18,3 +18,14 @@ exports.updatedon = function(schema)
     next();
   });
 };
+
+var fileSchema = Schema({
+	name: Schema.Types.String,
+	size: Schema.Types.Number,
+	key: Schema.Types.String
+});
+
+exports.files = function(schema)
+{
+	schema.add({ files: [fileSchema] });
+};

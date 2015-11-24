@@ -20,6 +20,7 @@ var projectSchema = Schema({
 	tags: [tagSchema]
 });
 
+projectSchema.plugin(plugins.files);
 projectSchema.plugin(plugins.createdon);
 projectSchema.plugin(plugins.updatedon);
 
@@ -45,7 +46,7 @@ exports.Project = mongoose.model('Project', projectSchema);
  */
 
 /**
- * Container model object.
+ * Tag model object.
  * @typedef {object} TagModel
  * @prop {string} name
  * @prop {string} color
