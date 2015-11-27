@@ -24,14 +24,14 @@ exports.Projects = {
 
 	/**
 	 * Get a project.
-	 * @param {ObjectID} projectId
+	 * @param {ObjectID} id
 	 * @returns {Promise} A promise that returns a {@link ProjectModel} object.
 	 */
-	get: function(projectId)
+	get: function(id)
 	{
 		return new Promise(function(resolve, reject) {
 
-			models.Project.findById(projectId, function(err, document)
+			models.Project.findById(id, function(err, document)
 			{
 				if(err) return reject(err);
 
@@ -39,18 +39,68 @@ exports.Projects = {
 			});
 
 		});
+	},
+
+	/**
+	 * Save a project.
+	 * @param {ProjectModel} project - Project model object to be saved.
+	 * @returns {Promise} A promise that returns the supplied object.
+	 */
+	update: function(project)
+	{
+		return new Promise(function(resolve, reject) {
+
+			project.save(function(err, document, numAffected) {
+				if(err) return reject(err);
+
+				resolve(document);
+			});
+
+		});
+	},
+
+	/**
+	 * Delete a project.
+	 * @param {ObjectID} id
+	 * @returns {Promise} A promise that returns the deleted {@link ProjectModel} project.
+	 */
+	remove: function(id)
+	{
+		return new Promise(function(resolve, reject) {
+
+			models.Project.findById(id, function(err, document)
+			{
+				if(err) return reject(err);
+
+				document.remove(function(err) {
+					if(err) return reject(err);
+
+					resolve(document);
+				});
+			});
+
+		});
+	},
+
+	/**
+	 * Create one or more projects.
+	 * @param {ProjectModel,[ProjectModel]} projects - An object or array of objects.
+	 * @returns {Promise} A promise that returns a {@link ProjectModel} object or an array of objects.
+	 */
+	create: function(projects)
+	{
+		return new Promise(function(resolve, reject) {
+
+			models.Project.create(projects, function(err, documents)
+			{
+				if(err) return reject(err);
+
+				resolve(documents);
+			});
+
+		});
 	}
-
-
 };
-
-
-
-
-
-
-
-
 
 
 /**

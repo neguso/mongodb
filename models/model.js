@@ -8,13 +8,13 @@ var xxxSchema = Schema({
 	f2: [{ type: Schema.Types.ObjectId, ref: 'yyy' }]
 });
 
-xxxSchema.plugin(plugins.createdon);
-xxxSchema.plugin(plugins.updatedon);
-
 xxxSchema.virtual('property').get(function()
 {
 	return /*expression*/;
 });
+
+xxxSchema.plugin(plugins.createdon);
+xxxSchema.plugin(plugins.updatedon);
 
 xxxSchema.index({ f1: 1 }, { name: 'ix_f1' });
 

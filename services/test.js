@@ -51,7 +51,14 @@ exports.testProject = co.wrap(function*() {
 		var l = yield service.Projects.read(user._id);
 		var p = yield service.Projects.get(project._id);
 
-		var a = 1;
+		p.name = 'new project name';
+		service.Projects.update(p);
+
+		service.Projects.remove(p._id);
+
+
+
+		var e = 0;
 	}
 	catch(err)
 	{
