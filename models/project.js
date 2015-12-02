@@ -1,7 +1,7 @@
 ﻿var mongoose = require('mongoose');
 var plugins = require('./plugins.js');
 
-var projectuserlink = require('./projectuserlink.js');
+var models = { ProjectUserLink: require('./projectuserlink.js').ProjectUserLink };
 var storage = require('../core/storage.js');
 
 var Schema = mongoose.Schema;
@@ -31,7 +31,7 @@ projectSchema.index({ name: 1 }, { name: 'ix_name' });
 projectSchema.pre('remove', function(next) {
 
 	// cascade delete user links
-	projectuserlink.ProjectUserLink.find({ project: this._id }).remove().exec();
+	models.ProjectUserLink.find({ project: this._id }).remove().exec();
 
 	// delete related resources
 	if(Array.isArray(this.files))
@@ -39,6 +39,25 @@ projectSchema.pre('remove', function(next) {
 
 	next();
 });
+
+/**
+ * Read user projects.
+ * @param {ObjectID} userId
+ * @returns {Promise} A promise that returns an array of {@link ProjectInfo} objects.
+ */
+projectSchema.statics.read = function(userId) {
+	return new Promise(function(resolve, reject) {
+
+		models.ProjectUserLink.find({ user: userId }, 'project', { lean: true }).populate('project', 'name description').exec(function(err, documents)
+		{
+			if(err) return reject(err);
+
+			resolve(documents.map(function(p) { return { _id: p.project._id, name: p.project.name, description: p.project.description } }));
+		});
+
+	});
+};
+
 
 exports.Project = mongoose.model('Project', projectSchema);
 

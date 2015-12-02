@@ -49,6 +49,7 @@ exports.testProject = co.wrap(function*() {
 
 
 		var l = yield service.Projects.read(user._id);
+		var ll = yield models.Project.read(user._id);
 		var p = yield service.Projects.get(project._id);
 
 		p.name = 'new project name';
