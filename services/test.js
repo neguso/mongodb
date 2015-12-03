@@ -6,6 +6,20 @@ var models = require('../models');
 var service = require('../services/projects');
 
 
+exports.testConfiguration = function() {
+
+	var config1 = require('./configuration');
+	var config2 = require('./configuration');
+
+	config1.save();
+	config2.save();
+
+	var a1 = config1.load();
+	var a2 = config2.load();
+
+};
+
+
 exports.testProject = co.wrap(function*() {
 
 	try {

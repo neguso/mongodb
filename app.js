@@ -11,6 +11,7 @@ mongoose.connection.once('open', function()
 {
 	console.log('MongoDB connection opened.');
 
+	test.testConfiguration();
 	test.testProject();
 });
 
