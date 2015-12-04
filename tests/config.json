@@ -1,0 +1,7 @@
+{
+  "string": "localhost",
+  "number": 100,
+  "object": {
+    "boolean": true
+  }
+}
