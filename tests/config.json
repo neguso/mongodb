@@ -1,7 +1,11 @@
 {
-  "string": "localhost",
-  "number": 100,
-  "object": {
-    "boolean": true
+  "property": "flat",
+  "object1": { "object2": { "property": "deep" } },
+  "types": {
+    "boolean": true,
+    "number": 123,
+    "float": 123.456,
+    "string": "text",
+    "date": "2015-01-01T12:34:56.789Z"
   }
 }
