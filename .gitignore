@@ -44,7 +44,4 @@ Temporary Items
 
 # my excludes
 node_modules
-bin
-obj
-.ntvs_analysis.dat
-.ntvs_analysis.dat.temp
+tests/files

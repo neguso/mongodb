@@ -1,7 +1,7 @@
 'use strict';
 
-var fs = require('fs');
-var restify = require('restify');
+var fs = require('fs'),
+		restify = require('restify');
 
 module.exports = function(file)
 {
@@ -112,7 +112,8 @@ module.exports = function(file)
 			if(i === ary.length - 1)
 				callback(config, ary[i]);
 			else {
-				if(!config.hasOwnProperty(ary[i])) {
+				if(!config.hasOwnProperty(ary[i]))
+				{
 					if(create)
 						config[ary[i]] = {};
 					else {
@@ -165,7 +166,7 @@ module.exports = function(file)
 	function watch()
 	{
 		fs.unwatchFile(file);
-		fs.watchFile(file, { persistent: false }, function(curr, prev)
+		fs.watchFile(file, {persistent: false}, function(curr, prev)
 		{
 
 			fs.readFile(file, function(err, data)
