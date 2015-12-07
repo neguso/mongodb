@@ -2,6 +2,7 @@ exports.test = function() {
 	store_create_file();
 	load_loads_file();
 	load_file_missing();
+	listen();
 };
 
 var assert = require('assert');
@@ -38,4 +39,15 @@ function load_file_missing()
 
 		assert(data === null, 'load() should return null');
 	});
+}
+
+function listen()
+{
+	attachments.listen(8080, function() {
+
+		console.log('start listening on 8080');
+
+	});
+
+
 }

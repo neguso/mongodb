@@ -1,7 +1,8 @@
 'use strict';
 
 var fs = require('fs'),
-		path = require('path');
+		path = require('path'),
+		restify = require('restify');
 
 module.exports = function(folder)
 {
@@ -51,6 +52,30 @@ module.exports = function(folder)
 
 				cb(null);
 			});
+		},
+
+		listen: function(port, cb)
+		{
+			var server = restify.createServer();
+			server.get('/:key/:file', function(request, response, next) {
+
+				var file = path.join(folder, request.params.key + path.extname(request.params.file));
+				fs.readFile(file, function(err, data) {
+					if(err)
+					{
+						response.send(new restify.NotFoundError('File not found.'));
+						response.end();
+						return;
+					}
+
+					response.header('Content-disposition', 'attachment; filename=' + request.params.file);
+					response.end(data);
+				});
+
+				next();
+			});
+
+			server.listen(port, cb);
 		}
 
 	};
