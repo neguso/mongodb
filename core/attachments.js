@@ -6,7 +6,10 @@ var fs = require('fs'),
 
 module.exports = function(folder)
 {
+	var rest;
+
 	return {
+
 		store: function(data, type, cb)
 		{
 			var key = random();
@@ -56,8 +59,8 @@ module.exports = function(folder)
 
 		listen: function(port, cb)
 		{
-			var server = restify.createServer();
-			server.get('/:key/:file', function(request, response, next) {
+			rest = restify.createServer();
+			rest.get('/:key/:file', function(request, response, next) {
 
 				var file = path.join(folder, request.params.key + path.extname(request.params.file));
 				fs.readFile(file, function(err, data) {
@@ -75,7 +78,15 @@ module.exports = function(folder)
 				next();
 			});
 
-			server.listen(port, cb);
+			rest.listen(port, cb);
+		},
+
+		close: function(cb)
+		{
+			if(typeof cb === 'function')
+				rest.close(cb);
+			else
+				rest.close();
 		}
 
 	};

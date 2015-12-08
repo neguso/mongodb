@@ -2,16 +2,16 @@ exports.test = function() {
 	store_create_file();
 	load_loads_file();
 	load_file_missing();
-	listen();
+	rest_loads_file();
 };
 
 var assert = require('assert');
-var fs = require('fs');
+var fs = require('fs'),
+		path = require('path');
 
 var attachments = require('../core/attachments')('files');
 
-function store_create_file()
-{
+function store_create_file() {
 	attachments.store('data', 'txt', function(err, key) {
 		assert(err === null, 'store() should not return error');
 
@@ -20,8 +20,7 @@ function store_create_file()
 	});
 }
 
-function load_loads_file()
-{
+function load_loads_file() {
 	attachments.store('data', 'txt', function(err, key) {
 
 		attachments.load(key, 'utf8', function(err, data) {
@@ -32,8 +31,7 @@ function load_loads_file()
 	});
 }
 
-function load_file_missing()
-{
+function load_file_missing() {
 	attachments.load('missing_file', 'utf8', function(err, data) {
 		assert(err === null, 'load() should not return error');
 
@@ -41,13 +39,25 @@ function load_file_missing()
 	});
 }
 
-function listen()
-{
-	attachments.listen(8080, function() {
+function rest_loads_file() {
+	attachments.store('some data', 'txt', function(err, key) {
+		assert(err === null, 'store() should not return error');
 
-		console.log('start listening on 8080');
+		attachments.listen(8080, function() {
 
+			var restify = require('restify');
+			var client = restify.createJsonClient('http://localhost:8080');
+
+			client.get('/' + path.basename(key, '.txt') + '/file.txt', function(err, req, res, obj) {
+				assert(err === null, 'http get should not return error');
+
+				assert(res.body === 'some data', ' httpget should return file content');
+
+				console.log('stopping listening');
+				attachments.close(function(err) {
+					console.log('stopped listening');
+				});
+			});
+		});
 	});
-
-
 }
