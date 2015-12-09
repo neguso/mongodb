@@ -6,7 +6,7 @@ var fs = require('fs'),
 module.exports = function(file)
 {
 	let current = {}, previous = {};
-	let watchlist = [];
+	let watchlist = []; // { path: string, callback: (path, current, previous) => {} }
 
 	return {
 

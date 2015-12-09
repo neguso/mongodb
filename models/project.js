@@ -1,8 +1,10 @@
 ﻿var mongoose = require('mongoose');
 var plugins = require('./plugins.js');
-
 var models = { ProjectUserLink: require('./projectuserlink.js').ProjectUserLink };
-var storage = require('../core/storage.js');
+
+var config = require('../core/configuration.js')('config.json');
+var attachments = require('../core/attachments.js')();
+
 
 var Schema = mongoose.Schema;
 
@@ -28,14 +30,18 @@ projectSchema.plugin(plugins.updatedon);
 
 projectSchema.index({ name: 1 }, { name: 'ix_name' });
 
+var ProjectModel = mongoose.model('Project', projectSchema);
+
+exports.Project = ProjectModel;
+
+
 projectSchema.pre('remove', function(next) {
 
 	// cascade delete user links
 	models.ProjectUserLink.find({ project: this._id }).remove().exec();
 
-	// delete related resources
-	if(Array.isArray(this.files))
-		storage.Resources.remove(this.files.map(function(file) { return file.key; }));
+	// cascade delete files
+
 
 	next();
 });
@@ -58,8 +64,6 @@ projectSchema.statics.read = function(userId) {
 	});
 };
 
-
-exports.Project = mongoose.model('Project', projectSchema);
 
 
 /**
