@@ -90,6 +90,11 @@ module.exports = function(file)
 			});
 		},
 
+		/**
+		 * Watch specified configuration for changes.
+		 * @param {string} path
+		 * @param {function(path, current, previous)} cb
+		 */
 		watch: function(path, cb)
 		{
 			if(watchlist.indexOf(path) === -1)

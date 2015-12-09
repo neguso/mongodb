@@ -1,12 +1,12 @@
 'use strict';
 
 var fs = require('fs'),
-		path = require('path'),
-		restify = require('restify');
+	path = require('path'),
+	restify = require('restify');
 
 module.exports = function(folder)
 {
-	var rest;
+	var server;
 
 	return {
 
@@ -33,7 +33,8 @@ module.exports = function(folder)
 			});
 		},
 
-		load: function(key, encoding, cb) {
+		load: function(key, encoding, cb)
+		{
 			var file = path.join(folder, key);
 			fs.readFile(file, encoding, function(err, data) {
 				if(err)
@@ -59,8 +60,8 @@ module.exports = function(folder)
 
 		listen: function(port, cb)
 		{
-			rest = restify.createServer();
-			rest.get('/:key/:file', function(request, response, next) {
+			server = restify.createServer();
+			server.get('/:key/:file', function(request, response, next) {
 
 				var file = path.join(folder, request.params.key + path.extname(request.params.file));
 				fs.readFile(file, function(err, data) {
@@ -78,15 +79,15 @@ module.exports = function(folder)
 				next();
 			});
 
-			rest.listen(port, cb);
+			server.listen(port, cb);
 		},
 
 		close: function(cb)
 		{
 			if(typeof cb === 'function')
-				rest.close(cb);
+				server.close(cb);
 			else
-				rest.close();
+				server.close();
 		}
 
 	};

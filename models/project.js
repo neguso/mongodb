@@ -3,19 +3,18 @@ var plugins = require('./plugins.js');
 var models = { ProjectUserLink: require('./projectuserlink.js').ProjectUserLink };
 
 var config = require('../core/configuration.js')('config.json');
-var attachments = require('../core/attachments.js')();
-
+var attachments = require('../core/attachments.js');
 
 var Schema = mongoose.Schema;
 
 var containerSchema = new Schema({
-	name: Schema.Types.String,
-	description: Schema.Types.String
-}),
+		name: Schema.Types.String,
+		description: Schema.Types.String
+	}),
 	tagSchema = new Schema({
-	name: Schema.Types.String,
-	color: Schema.Types.String
-});
+		name: Schema.Types.String,
+		color: Schema.Types.String
+	});
 
 var projectSchema = Schema({
 	name: Schema.Types.String,
@@ -41,7 +40,15 @@ projectSchema.pre('remove', function(next) {
 	models.ProjectUserLink.find({ project: this._id }).remove().exec();
 
 	// cascade delete files
+	init(function(err, attachments) {
+		if(err)
+		{
+			console.error('error deleting project attachments');
+			return;
+		}
 
+		this.files.map((file) => attachments.remove(file.key));
+	});
 
 	next();
 });
@@ -58,11 +65,43 @@ projectSchema.statics.read = function(userId) {
 		{
 			if(err) return reject(err);
 
-			resolve(documents.map(function(p) { return { _id: p.project._id, name: p.project.name, description: p.project.description } }));
+			resolve(documents.map(function(p) {
+				return { _id: p.project._id, name: p.project.name, description: p.project.description }
+			}));
 		});
 
 	});
 };
+
+
+function init(cb)
+{
+	var attachments_service = null;
+
+	Promise.all([
+
+			new Promise((resolve, reject) => {
+				if(attachments_service === null)
+				{
+					config.connect((err) => {
+						if(err) return reject(err);
+
+						attachments_service = attachments(config.get('files/location'));
+						resolve();
+					});
+				}
+				else {
+					resolve();
+				}
+			})
+
+	])
+		.then(function() {
+			cb(err, attachments_service);
+		}, function(err) {
+			cb(err);
+		});
+}
 
 
 
