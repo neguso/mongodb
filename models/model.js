@@ -3,9 +3,10 @@ var plugins = require('./plugins.js');
 
 var Schema = mongoose.Schema;
 
-var xxxSchema = Schema({
+
+var xxxSchema = new Schema({
 	f1: Schema.Types.String,
-	f2: [{ type: Schema.Types.ObjectId, ref: 'yyy' }]
+	f2: [{ type: Schema.Types.ObjectId, ref: 'zzz' }]
 });
 
 xxxSchema.virtual('property').get(function()
@@ -28,4 +29,14 @@ xxxSchema.statics.s1 = function()
 	// this - the model object
 };
 
-exports.eee = mongoose.model('eee', xxxSchema);
+var yyy = mongoose.model('yyy', xxxSchema);
+
+exports.eee = yyy;
+
+xxxSchema.pre('remove', function(next) {
+
+	// cascade delete
+	//...
+
+	next();
+});

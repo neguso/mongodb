@@ -3,14 +3,11 @@ var plugins = require('./plugins.js');
 
 var Schema = mongoose.Schema;
 
-var userSchema = Schema({
+var userSchema = new Schema({
 	email: Schema.Types.String,
 	firstname: Schema.Types.String,
 	lastname: Schema.Types.String
-});
-
-userSchema.plugin(plugins.createdon);
-userSchema.plugin(plugins.updatedon);
+}, { timestamps: { createdAt: 'createdon', updatedAt: 'updatedon' } });
 
 userSchema.virtual('fullname').get(function()
 {
@@ -19,4 +16,6 @@ userSchema.virtual('fullname').get(function()
 
 userSchema.index({ email: 1 }, { name: 'ix_email', unique: true });
 
-exports.User = mongoose.model('User', userSchema);
+var User = mongoose.model('User', userSchema);
+
+exports.User = User;

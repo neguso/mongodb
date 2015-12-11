@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema;
 
-var projectuserlinkSchema = Schema({
-	role: Schema.Types.String,
+var projectuserlinkSchema = new Schema({
+	role: { type: Schema.Types.String, enum: ['admin', 'default'] },
 	project: { type: Schema.Types.ObjectId, ref: 'Project' },
 	user: { type: Schema.Types.ObjectId, ref: 'User' }
 });

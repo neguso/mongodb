@@ -2,13 +2,13 @@
 var plugins = require('./plugins.js');
 
 var models = {
-	Message: require('./message.js').Message,
-	Activity: require('./activity.js').Activity
+	//Message: require('./message.js').Message,
+	//Activity: require('./activity.js').Activity
 };
 
 var Schema = mongoose.Schema;
 
-var taskSchema = Schema({
+var taskSchema = new Schema({
   name: Schema.Types.String,
   description: Schema.Types.String,
 	start: Schema.Types.Date,
@@ -18,11 +18,9 @@ var taskSchema = Schema({
 	container: Schema.Types.ObjectId, // ref: Project.Container
 	tags: [Schema.Types.ObjectId], // ref: Project.Tag
 	users: [{ type: Schema.Types.ObjectId, ref: 'User' }]
-});
+}, { timestamps: { createdAt: 'createdon', updatedAt: 'updatedon' } });
 
 taskSchema.plugin(plugins.files);
-taskSchema.plugin(plugins.createdon);
-taskSchema.plugin(plugins.updatedon);
 
 taskSchema.index({ name: 1 }, { name: 'ix_name' });
 

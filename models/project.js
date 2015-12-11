@@ -8,26 +8,36 @@ var attachments = require('../core/attachments.js');
 var Schema = mongoose.Schema;
 
 var containerSchema = new Schema({
-		name: Schema.Types.String,
-		description: Schema.Types.String
-	}),
+	name: Schema.Types.String,
+	description: Schema.Types.String,
+	container: Schema.Types.ObjectId
+}),
 	tagSchema = new Schema({
 		name: Schema.Types.String,
 		color: Schema.Types.String
 	});
 
-var projectSchema = Schema({
+var projectSchema = new Schema({
 	name: Schema.Types.String,
 	description: Schema.Types.String,
 	containers: [containerSchema],
 	tags: [tagSchema]
-});
+}, { timestamps: { createdAt: 'createdon', updatedAt: 'updatedon' } });
 
 projectSchema.plugin(plugins.files);
-projectSchema.plugin(plugins.createdon);
-projectSchema.plugin(plugins.updatedon);
 
 projectSchema.index({ name: 1 }, { name: 'ix_name' });
+
+// assign user to project
+projectSchema.methods.assign = function(user, role, cb)
+{
+	models.ProjectUserLink.create({
+		role: role,
+		project: this.id,
+		user: user
+	}, cb);
+};
+
 
 var ProjectModel = mongoose.model('Project', projectSchema);
 
@@ -74,35 +84,33 @@ projectSchema.statics.read = function(userId) {
 };
 
 
-function init(cb)
-{
+var init = function(cb) {
+
 	var attachments_service = null;
 
 	Promise.all([
 
 			new Promise((resolve, reject) => {
-				if(attachments_service === null)
-				{
-					config.connect((err) => {
-						if(err) return reject(err);
+				config.connect((err) => {
+					if(err) return reject(err);
 
-						attachments_service = attachments(config.get('files/location'));
-						resolve();
-					});
-				}
-				else {
+					attachments_service = attachments(config.get('files/location'));
 					resolve();
-				}
+				});
 			})
 
-	])
+		])
 		.then(function() {
 			cb(err, attachments_service);
+
+			// rewrite init function
+			init = function(cb) {
+				cb(null, attachments_service);
+			};
 		}, function(err) {
 			cb(err);
 		});
-}
-
+};
 
 
 /**
