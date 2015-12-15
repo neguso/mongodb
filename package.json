@@ -16,5 +16,8 @@
     "mongoose": "^4.1.10",
     "q": "^1.4.1",
     "restify": "^4.0.3"
+  },
+  "devDependencies": {
+    "v8-profiler": "^5.5.0"
   }
 }

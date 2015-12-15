@@ -11,7 +11,7 @@ mongoose.connection.once('open', function()
 
 	require('./configuration').test();
 	require('./attachments').test();
-	require('./entities').test();
+	//require('./entities').test();
 
 });
 
@@ -20,9 +20,9 @@ mongoose.connection.once('close', function()
 	console.log('MongoDB connection closed.');
 });
 
-mongoose.connection.on('error', function()
+mongoose.connection.on('error', function(err)
 {
-	console.log('MongoDB connection error.');
+	console.log('MongoDB connection error. ' + err);
 });
 
 config.connect(function() {
