@@ -1,3 +1,7 @@
+// Configuration Service
+// Type: transient
+
+
 'use strict';
 
 var fs = require('fs'),
@@ -24,10 +28,7 @@ module.exports = function(file)
 
 				fs.readFile(file, function(err, data)
 				{
-					if(err) {
-						cb(err);
-						return;
-					}
+					if(err) return cb(err);
 
 					try {
 						previous = clone(current = JSON.parse(data));
@@ -81,10 +82,7 @@ module.exports = function(file)
 			{
 				watch();
 
-				if(err) {
-					cb(err);
-					return;
-				}
+				if(err) return cb(err);
 
 				cb(null);
 			});
@@ -129,20 +127,6 @@ module.exports = function(file)
 				config = config[ary[i]];
 			}
 		}
-	}
-
-	function equals(c1, c2, path)
-	{
-		var v1, v2;
-		parse(c1, path, function(object, property)
-		{
-			v1 = object[property];
-		});
-		parse(c2, path, function(object, property)
-		{
-			v2 = object[property];
-		});
-		return JSON.stringify(v1) === JSON.stringify(v2);
 	}
 
 	function notify(watchlist, path, current, previous, callback)

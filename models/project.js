@@ -101,14 +101,14 @@ var init = function(cb) {
 
 		])
 		.then(function() {
-			cb(err, attachments_service);
+			cb(null, attachments_service);
 
-			// rewrite init function
+			// override init function
 			init = function(cb) {
 				cb(null, attachments_service);
 			};
 		}, function(err) {
-			cb(err);
+			cb(err, null);
 		});
 };
 
