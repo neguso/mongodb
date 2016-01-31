@@ -1,5 +1,4 @@
 var mongoose = require('mongoose');
-var co = require('co');
 
 var config = require('./config');
 var models = require('./models');

@@ -2,14 +2,13 @@ var co = require('co');
 var mongoose = require('mongoose');
 
 var models = require('../models');
-var config = require('../core/configuration')('../config.json');
+var config = require('../config.js');
 
 
 mongoose.connection.once('open', function()
 {
 	console.log('MongoDB connection opened.');
 
-	require('./configuration').test();
 	require('./attachments').test();
 	//require('./entities').test();
 
@@ -25,9 +24,4 @@ mongoose.connection.on('error', function(err)
 	console.log('MongoDB connection error. ' + err);
 });
 
-config.connect(function() {
-
-	mongoose.connect('mongodb://' + config.get('mongodb/server') +  '/' + config.get('mongodb/database'));
-
-});
-
+mongoose.connect('mongodb://' + config.mongodb.server +  '/' + config.mongodb.database);

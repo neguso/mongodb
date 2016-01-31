@@ -1,7 +1,6 @@
 // Configuration Service
 // Type: transient
 
-
 'use strict';
 
 var fs = require('fs'),
@@ -154,7 +153,6 @@ module.exports = function(file)
 
 	function watch()
 	{
-		fs.unwatchFile(file);
 		fs.watchFile(file, {persistent: false}, function(curr, prev)
 		{
 

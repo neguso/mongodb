@@ -1,3 +1,6 @@
+// Attachments Service
+// Type: transient
+
 'use strict';
 
 var fs = require('fs'),
@@ -96,9 +99,8 @@ module.exports = function(folder)
 
 function random()
 {
-	var ary = new Array(10);
-	var chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-	for(var i = 0; i < 10; i++)
-		ary[i] = chars.charAt(Math.floor(Math.random() * chars.length));
+	var ary = new Array(10), chars = "abcdefghijklmnopqrstuvwxyz0123456789", length = chars.length;
+	for(let i = 0; i < 10; i++)
+		ary[i] = chars.charAt(Math.floor(Math.random() * length));
 	return ary.join('');
 }

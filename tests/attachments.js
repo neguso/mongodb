@@ -2,7 +2,7 @@ exports.test = function() {
 	store_create_file();
 	load_loads_file();
 	load_file_missing();
-	rest_loads_file();
+	//rest_loads_file();
 };
 
 var assert = require('assert');

@@ -2,8 +2,8 @@
 var plugins = require('./plugins.js');
 var models = { ProjectUserLink: require('./projectuserlink.js').ProjectUserLink };
 
-var config = require('../core/configuration.js')('config.json');
-var attachments = require('../core/attachments.js');
+var config = require('../config.js');
+var attachments = require('../core/attachments.js')(config.files.location);
 
 var Schema = mongoose.Schema;
 
@@ -50,15 +50,7 @@ projectSchema.pre('remove', function(next) {
 	models.ProjectUserLink.find({ project: this._id }).remove().exec();
 
 	// cascade delete files
-	init(function(err, attachments) {
-		if(err)
-		{
-			console.error('error deleting project attachments');
-			return;
-		}
-
-		this.files.map((file) => attachments.remove(file.key));
-	});
+	this.files.map((file) => attachments.remove(file.key));
 
 	next();
 });
@@ -81,35 +73,6 @@ projectSchema.statics.read = function(userId) {
 		});
 
 	});
-};
-
-
-var init = function(cb) {
-
-	var attachments_service = null;
-
-	Promise.all([
-
-			new Promise((resolve, reject) => {
-				config.connect((err) => {
-					if(err) return reject(err);
-
-					attachments_service = attachments(config.get('files/location'));
-					resolve();
-				});
-			})
-
-		])
-		.then(function() {
-			cb(null, attachments_service);
-
-			// override init function
-			init = function(cb) {
-				cb(null, attachments_service);
-			};
-		}, function(err) {
-			cb(err, null);
-		});
 };
 
 
